@@ -27,7 +27,7 @@ class AA2NT
         puts "  #{ix + 1}/#{fasta.entries.size}: Writing all sequences of " \
           "#{entry.entry_id}"
         count = build_seq(f, res, entry.entry_id, 1)
-        puts "    #{count} reverse translation written"
+        puts "    #{count - 1} reverse translation written"
       end
     end
   end
@@ -48,15 +48,17 @@ class AA2NT
   end
 
   # recursivo sem grandes requisitos de memoria
-  def build_seq(f, res, name, id, prefix = '')
+  def build_seq(f, res, name, id, prefix = '', it = 0)
     if res.nil? || res.empty?
       f.write Bio::Sequence.auto(prefix).output_fasta("#{name}_#{id}")
       return id + 1
     end
     #
-    combin = res.shift
+    new_res = res.clone
+    combin = new_res.shift
     combin.each do |el|
-      id = build_seq(f, res, name, id, prefix + el)
+      # puts "  #{it}: prefix = #{} | el = #{el} | new_res.size = #{new_res.size}"
+      id = build_seq(f, new_res, name, id, "#{prefix}#{el}", it + 1)
     end
     id
   end

@@ -6,6 +6,16 @@ The algorithm is pretty simple, it generates a directed graph with all possible 
 
 In practice, it is an array of possible codons for each protein and does a depth-first search of the graph, generating a string at each leaf with all parents. It is a recursive algorithm to keep memory usage minimum.
 
+## Example
+
+Using codon table 1, the sequence 'AMG' should be translated to 16 nucleotide sequences:
+
+    "gctatgggt", "gctatgggc", "gctatggga", "gctatgggg",
+     "gccatgggt", "gccatgggc", "gccatggga", "gccatgggg",
+     "gcaatgggt", "gcaatgggc", "gcaatggga", "gcaatgggg",
+     "gcgatgggt", "gcgatgggc", "gcgatggga", "gcgatgggg"
+
+
 ## Requirements
 
 - Ruby Programing Environment
