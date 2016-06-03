@@ -4,9 +4,10 @@ require 'byebug'
 #
 class AA2NT
   #
-  def initialize(table_num = 1)
+  def initialize(table_num = 1, max = nil)
     puts "Running with codon table: #{table_num}..."
     @table = Bio::CodonTable[table_num]
+    @max_iterations = (max.nil? ? Float::INFINITY : max)
   end
 
   def revtrans(input_file = 'input.query', output_file = 'output.query')
@@ -27,7 +28,7 @@ class AA2NT
         puts "  #{ix + 1}/#{fasta.entries.size}: Writing all sequences of " \
           "#{entry.entry_id}"
         count = build_seq(f, res, entry.entry_id, 1)
-        puts "    #{count - 1} reverse translation written"
+        puts "    #{count - 1} reverse translations written"
       end
     end
   end
@@ -48,7 +49,7 @@ class AA2NT
   end
 
   # recursivo sem grandes requisitos de memoria
-  def build_seq(f, res, name, id, prefix = '', it = 0)
+  def build_seq(f, res, name, id, prefix = '')
     if res.nil? || res.empty?
       f.write Bio::Sequence.auto(prefix).output_fasta("#{name}_#{id}")
       return id + 1
@@ -57,8 +58,8 @@ class AA2NT
     new_res = res.clone
     combin = new_res.shift
     combin.each do |el|
-      # puts "  #{it}: prefix = #{} | el = #{el} | new_res.size = #{new_res.size}"
-      id = build_seq(f, new_res, name, id, "#{prefix}#{el}", it + 1)
+      id = build_seq(f, new_res, name, id, "#{prefix}#{el}")
+      return id if id > @max_iterations
     end
     id
   end
@@ -68,9 +69,17 @@ codon_table = 1
 begin
   codon_table = Integer(ARGV[0]) if ARGV.size > 0
 rescue
-  puts "Error: first argument must be a number and '#{ARGV[0]}' is not one."
+  puts "Error: first argument must be a number and '#{ARGV[0]}' is not."
   exit
 end
 
-myclass = AA2NT.new(codon_table)
+max_iterations = Float::INFINITY
+begin
+  max_iterations = Integer(ARGV[1]) if ARGV.size > 1
+rescue
+  puts "Error: second argument must be a number and '#{ARGV[1]}' is not."
+  exit
+end
+
+myclass = AA2NT.new(codon_table, max_iterations)
 myclass.revtrans
