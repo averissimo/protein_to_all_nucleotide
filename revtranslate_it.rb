@@ -5,6 +5,7 @@ require 'byebug'
 class AA2NT
   #
   def initialize(table_num = 1)
+    puts "Running with codon table: #{table_num}..."
     @table = Bio::CodonTable[table_num]
   end
 
@@ -23,10 +24,10 @@ class AA2NT
       fasta.entries.each_with_index do |entry, ix|
         seq = Bio::Sequence::AA.new(entry.seq)
         res = build_rev_trans(seq)
-        puts "#{ix + 1}/#{fasta.entries.size}: Writing all sequences of " \
+        puts "  #{ix + 1}/#{fasta.entries.size}: Writing all sequences of " \
           "#{entry.entry_id}"
         count = build_seq(f, res, entry.entry_id, 1)
-        puts "  #{count} reverse translation written"
+        puts "    #{count} reverse translation written"
       end
     end
   end
@@ -61,5 +62,13 @@ class AA2NT
   end
 end
 
-myclass = AA2NT.new(1)
+codon_table = 1
+begin
+  codon_table = Integer(ARGV[0]) if ARGV.size > 0
+rescue
+  puts "Error: first argument must be a number and '#{ARGV[0]}' is not one."
+  exit
+end
+
+myclass = AA2NT.new(codon_table)
 myclass.revtrans
