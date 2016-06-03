@@ -1,4 +1,10 @@
-# Find out all nucleotide sequences from protein sequence
+# Reverse translate protein to nucleotide
+
+Considering all possible sequences.
+
+The algorithm is pretty simple, it generates a directed graph with all possible variations at each codon and writes the possible sequences to disk with minimal memory usage.
+
+In practice, it is an array of possible codons for each protein and does a depth-first search of the graph, generating a string at each leaf with all parents. It is a recursive algorithm to keep memory usage minimum.
 
 ## Requirements
 
